@@ -5,6 +5,17 @@ void ofApp::setup(){
     sampleRate = 44100;
     channels = 2;
     
+    v1.open(ofToDataPath("testMovie.mov"), ofFile::ReadWrite, false);
+    v2.open(ofToDataPath("testMovie2.mov"), ofFile::ReadWrite, false);
+    v3.open(ofToDataPath("testMovie3.mov"), ofFile::ReadWrite, false);
+    v4.open(ofToDataPath("testMovie4.mov"), ofFile::ReadWrite, false);
+    
+    
+    v1.remove();
+    v2.remove();
+    v3.remove();
+    v4.remove();
+    
     ofSetFrameRate(60);
     ofSetLogLevel(OF_LOG_VERBOSE);
     vidGrabber.setDesiredFrameRate(30);
@@ -43,20 +54,38 @@ void ofApp::exit(){
 
 //--------------------------------------------------------------
 void ofApp::update(){
-    vid.update();
-    vid2.update();
+    if(vid.isPlaying() && vid.isLoaded()){
+       vid.update();
+    }
+    if(vid2.isPlaying() && vid2.isLoaded()){
+        vid2.update();
+    }
+    if(vid3.isPlaying() && vid3.isLoaded()){
+        vid3.update();
+    }
+    if(vid4.isPlaying() && vid4.isLoaded()){
+        vid4.update();
+    }
     vidGrabber.update();
+//    if(vidGrabber.isFrameNew() && bRecording && vid.isPlaying()){
+//
+//        bool success = vidRecorder.addFrame(vidGrabber.getPixels());
+//        if (!success) {
+//            ofLogWarning("This frame was not added!");
+//        }
+//        fCount += 1;
+//        if(fCount == vid.getTotalNumFrames()){
+//            bRecording = false;
+//            vidRecorder.close();
+//            keyReleased(99);
+//            fCount = 0;
+//        }
+//    }
     if(vidGrabber.isFrameNew() && bRecording){
         bool success = vidRecorder.addFrame(vidGrabber.getPixels());
         if (!success) {
             ofLogWarning("This frame was not added!");
         }
-    }
-    if(vidPlaying && !vid2Playing){
-        //vid.play();
-    }else if(vid2Playing && vidPlaying){
-        //vid.play();
-        //vid2.play();
     }
     
     // Check if the video recorder encountered any error while writing video frame or audio smaples.
@@ -71,16 +100,18 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    if(vidPlaying && !vid2Playing){
+    if(vid.isPlaying() && vid.isLoaded()){
         vid.draw(0,0);
-        ofLogNotice("1");
-    }else if(vid2Playing && vidPlaying){
-        //vid2.play();
-        //vid.play();
-        vid.draw(0,0);
+        //ofLogNotice("1");
+    }else if(vid2.isPlaying() && vid2.isLoaded()){
         vid2.draw(100,100);
-        ofBackground(255,0,0);
-        ofLogNotice("2");
+        //ofLogNotice("2");
+    }else if(vid3.isPlaying() && vid3.isLoaded()){
+        vid3.draw(100,100);
+        //ofLogNotice("3");
+    }else if(vid4.isPlaying() && vid4.isLoaded()){
+        vid4.draw(100,100);
+        //ofLogNotice("4");
     }else{
         vidGrabber.draw(0,0);
         stringstream ss;
@@ -105,6 +136,9 @@ void ofApp::draw(){
         ofSetColor(255, 0, 0);
         ofDrawCircle(ofGetWidth() - 20, 20, 5);
     }
+    
+    ofSetColor(0,0,0);
+   
 }
 
 //--------------------------------------------------------------
@@ -120,6 +154,10 @@ void ofApp::recordingComplete(ofxVideoRecorderOutputFileCompleteEventArgs& args)
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
+}
+
+void ofApp::stopRec(){
+    
 }
 
 //--------------------------------------------------------------
@@ -146,17 +184,61 @@ void ofApp::keyReleased(int key){
     if(key=='c'){
         bRecording = false;
         vidRecorder.close();
-        if(first){
-        vid.load("testMovie.mov");
-        vidPlaying = true;
-        fileName = "testMovie2";
-        fileExt = ".mov";
-        first = !first;
-        vid.play();
-        }else{
-            vid2.load("testMovie2.mov");
-            vid2Playing = true;
+//        ofVideoPlayer player;
+//        if(player.load("testMovie" + ofToString(pCount) + ".mov")){
+//            player.play();
+//            pCount++;
+//            fileName = "testMovie" + ofToString(pCount);
+//            fileExt = ".mov";
+//        }
+//        players.push_back(player);
+//        ofLogNotice() << ofToString(players.size()) << endl;
+        
+        if(vid.load("testMovie.mov"));
+            vid.play();
+            fileName = "testMovie2";
+            fileExt = ".mov";
+        if(vid2.load("testMovie2.mov")){
+            vid.play();
+            vid2.play();
+            fileName = "testMovie3";
+            fileExt = ".mov";
         }
+        if(vid3.load("testMovie3.mov")){
+            vid.play();
+            vid2.play();
+            vid3.play();
+            fileName = "testMovie4";
+            fileExt = ".mov";
+        }
+        if(vid4.load("testMovie4.mov")){
+            vid.play();
+            vid2.play();
+            vid3.play();
+            vid4.play();
+            fileName = "testMovie";
+            fileExt = ".mov";
+        }
+        
+    }
+    if(key=='d'){
+        v1.open(ofToDataPath("testMovie.mov"), ofFile::ReadWrite, false);
+        v2.open(ofToDataPath("testMovie2.mov"), ofFile::ReadWrite, false);
+        v3.open(ofToDataPath("testMovie3.mov"), ofFile::ReadWrite, false);
+        v4.open(ofToDataPath("testMovie4.mov"), ofFile::ReadWrite, false);
+        
+        vid.stop();
+        vid2.stop();
+        vid3.stop();
+        vid4.stop();
+        
+        
+        
+        v1.remove();
+        v2.remove();
+        v3.remove();
+        v4.remove();
+        
     }
 }
 

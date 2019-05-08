@@ -37,7 +37,20 @@ public:
     ofPixels recordPixels;
     ofVideoPlayer vid;
     ofVideoPlayer vid2;
+    ofVideoPlayer vid3;
+    ofVideoPlayer vid4;
     bool first = true;
-    bool vidPlaying = false;
-    bool vid2Playing = false;
+    
+    std::vector<ofVideoPlayer> players;
+    
+    ofFile v1;
+    ofFile v2;
+    ofFile v3;
+    ofFile v4;
+    
+    int fCount = 0;
+    
+    int pCount = 1;
+    
+    void stopRec();
 };
